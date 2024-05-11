@@ -1,0 +1,153 @@
+-- Hard Hub
+local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
+local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
+
+Notification:Notify({Title = "Hard Hub", Description = "Hard Hub Loaded! V0.0.1"}, {OutlineColor = Color3.fromRGB(255, 0, 0), Time = 5, Type = "image"}, {Image = "http://www.roblox.com/asset/?id=6023426923", ImageColor = Color3.fromRGB(255, 50, 50)})
+wait(3)
+local PabloLib = loadstring(game:HttpGet("https://raw.githubusercontent.com/BatuKvi123/PabloLibV3/main/PabloLibV3"))()
+
+local window = PabloLib:Create("Hard Hub", "Enabled", "p")
+
+local visual = window:CreateTab("Visual")
+local player = window:CreateTab("Player")
+local main = window:CreateTab("Main")
+local esp = window:CreateTab("Esp")
+local tp = window:CreateTab("Teleport")
+
+visual:CreateButton("Full Bright", function()
+game:GetService("Lighting").Brightness = 2
+game:GetService("Lighting").GlobalShadows = false
+game:GetService("Lighting").OutdoorAmbient = Color3.new(1, 1, 1)
+game:GetService("Lighting").ShadowSoftness = 0
+game:GetService("Lighting").FogEnd = 100000
+game:GetService("Lighting").FogStart = 0
+end)
+
+visual:CreateButton("Remove Fog", function()
+local lighting = game:GetService("Lighting")
+
+lighting.FogEnd = 1000000
+lighting.FogStart = 1000000
+end)
+
+player:CreateTextbox("Walk Speed", function(v)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = v
+end)
+
+player:CreateTextbox("Jump Power", function(v)
+game.Players.LocalPlayer.Character.Humanoid.JumpPower = v
+end)
+
+player:CreateTextbox("Hip Height", function(v)
+game.Players.LocalPlayer.Character.Humanoid.HipHeight = v
+end)
+
+esp:CreateButton("Esp", function()
+local FillColor = Color3.fromRGB(175,25,255)
+local DepthMode = "AlwaysOnTop"
+local FillTransparency = 0.5
+local OutlineColor = Color3.fromRGB(255,255,255)
+local OutlineTransparency = 0
+
+local CoreGui = game:FindService("CoreGui")
+local Players = game:FindService("Players")
+local lp = Players.LocalPlayer
+local connections = {}
+
+local Storage = Instance.new("Folder")
+Storage.Parent = CoreGui
+Storage.Name = "Highlight_Storage"
+
+local function Highlight(plr)
+    local Highlight = Instance.new("Highlight")
+    Highlight.Name = plr.Name
+    Highlight.FillColor = FillColor
+    Highlight.DepthMode = DepthMode
+    Highlight.FillTransparency = FillTransparency
+    Highlight.OutlineColor = OutlineColor
+    Highlight.OutlineTransparency = 0
+    Highlight.Parent = Storage
+    
+    local plrchar = plr.Character
+    if plrchar then
+        Highlight.Adornee = plrchar
+    end
+
+    connections[plr] = plr.CharacterAdded:Connect(function(char)
+        Highlight.Adornee = char
+    end)
+end
+
+Players.PlayerAdded:Connect(Highlight)
+for i,v in next, Players:GetPlayers() do
+    Highlight(v)
+end
+
+Players.PlayerRemoving:Connect(function(plr)
+    local plrname = plr.Name
+    if Storage[plrname] then
+        Storage[plrname]:Destroy()
+    end
+    if connections[plr] then
+        connections[plr]:Disconnect()
+    end
+end)
+end)
+
+main:CreateButton("Spawn part under you", function()
+-- Get the player's character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Function to spawn a new part under the player
+local function spawnPartUnderPlayer()
+    local part = Instance.new("Part")
+    part.Size = Vector3.new(4, 1, 4)
+    part.Position = character.HumanoidRootPart.Position + Vector3.new(0, -3, 0)
+    part.Anchored = true
+    part.Transparency = 0.5
+    part.Parent = game.Workspace
+end
+
+-- Spawn the initial part
+spawnPartUnderPlayer()
+
+-- Bind the function to the character's position changing
+character.HumanoidRootPart:GetPropertyChangedSignal("Position"):Connect(spawnPartUnderPlayer)
+end)
+
+tp:CreateWarning("WARNING! if you fell the hub will be disappear")
+
+tp:CreateButton("Teleport to the safe zone", function()
+game:GetService("Workspace").INVISFLING_111.HumanoidRootPart.CFrame = CFrame.new(100000, 100000, 100000)
+
+-- Get the player's character
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+
+-- Function to spawn a new part under the player
+local function spawnPartUnderPlayer()
+    local part = Instance.new("Part")
+    part.Size = Vector3.new(500, 1, 500)
+    part.Position = character.HumanoidRootPart.Position + Vector3.new(0, -3, 0)
+    part.Anchored = true
+    part.Transparency = 0.7
+    part.BrickColor = BrickColor.new(0, 0 ,250) -- Blue color
+    part.Parent = game.Workspace
+end
+
+-- Spawn the initial part
+spawnPartUnderPlayer()
+
+-- Bind the function to the character's position changing
+character.HumanoidRootPart:GetPropertyChangedSignal("Position"):Connect(spawnPartUnderPlayer)
+end)
+
+player:CreateButton("Infinite Jump", function()
+local InfiniteJumpEnabled = true
+game:GetService("UserInputService").JumpRequest:connect(function()
+	if InfiniteJumpEnabled then
+		game:GetService"Players".LocalPlayer.Character:FindFirstChildOfClass'Humanoid':ChangeState("Jumping")
+	end
+end)
+end)
